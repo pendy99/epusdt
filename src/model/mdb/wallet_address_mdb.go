@@ -14,5 +14,5 @@ type WalletAddress struct {
 
 // TableName sets the insert table name for this struct type
 func (w *WalletAddress) TableName() string {
-	return "wallet_address"
+	return "usdt_wallet_address"
 }

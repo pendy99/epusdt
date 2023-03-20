@@ -25,5 +25,5 @@ type Orders struct {
 
 // TableName sets the insert table name for this struct type
 func (o *Orders) TableName() string {
-	return "orders"
+	return "usdt_orders"
 }
