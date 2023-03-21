@@ -80,11 +80,11 @@ func Trc20CallBack(token string, wg *sync.WaitGroup) {
 		"start":           "0",
 		"direction":       "2",
 		"db_version":      "1",
-		"trc20Id":        DebugTrc20Id,
+		"trc20Id":        trc20Id,
 		"address":         token,
 		"start_timestamp": stdutil.ToString(startTime),
 		"end_timestamp":   stdutil.ToString(endTime),
-	}).Get(DebugUsdtTrc20ApiUri)
+	}).Get(UsdtTrc20ApiUri)
 	if err != nil {
 		panic(err)
 	}
