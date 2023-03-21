@@ -44,7 +44,7 @@ func RegisterHandle() {
 
 // SendToBot 主动发送消息机器人消息
 func SendToBot(msg string) {
-	if config.TgBotToken != "" {
+	if config.TgBotToken == "" {
 		return
 	}
 	go func() {
