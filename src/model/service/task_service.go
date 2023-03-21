@@ -19,6 +19,9 @@ import (
 )
 
 const UsdtTrc20ApiUri = "https://apilist.tronscanapi.com/api/transfer/trc20"
+const DebugUsdtTrc20ApiUri = "https://nileapi.tronscan.org/api/transfer/trc20"
+const trc20Id = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+const DebugTrc20Id = "TXLAQ63Xg1NAzckPwKHvzw7CSEmLMEqcdj"
 
 type UsdtTrc20Resp struct {
 	PageSize int    `json:"page_size"`
@@ -77,11 +80,11 @@ func Trc20CallBack(token string, wg *sync.WaitGroup) {
 		"start":           "0",
 		"direction":       "2",
 		"db_version":      "1",
-		"trc20Id":         "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+		"trc20Id":        DebugTrc20Id,
 		"address":         token,
 		"start_timestamp": stdutil.ToString(startTime),
 		"end_timestamp":   stdutil.ToString(endTime),
-	}).Get(UsdtTrc20ApiUri)
+	}).Get(DebugUsdtTrc20ApiUri)
 	if err != nil {
 		panic(err)
 	}
