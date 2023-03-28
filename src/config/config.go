@@ -2,23 +2,25 @@ package config
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 var (
-	AppDebug    bool
-	UseTestNet bool
+	AppDebug       bool
+	UseTestNet     bool
 	BlockchainType int64
-	MysqlDns    string
-	RuntimePath string
-	LogSavePath string
-	StaticPath  string
-	TgBotToken  string
-	TgProxy     string
-	TgManage    int64
-	UsdtRate    float64
+	MysqlDns       string
+	RuntimePath    string
+	LogSavePath    string
+	StaticPath     string
+	TgBotToken     string
+	ApiKey         string
+	TgProxy        string
+	TgManage       int64
+	UsdtRate       float64
 )
 
 func Init() {
@@ -36,7 +38,7 @@ func Init() {
 	StaticPath = viper.GetString("static_path")
 	UseTestNet = viper.GetBool("use_testnet")
 	BlockchainType = viper.GetInt64("blockchain_type")
-	
+	ApiKey = viper.GetString("api_key")
 	RuntimePath = fmt.Sprintf(
 		"%s%s",
 		gwd,

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"math"
 	"net/http"
 	"strconv"
@@ -13,7 +12,6 @@ import (
 	"github.com/assimon/luuu/model/request"
 	"github.com/assimon/luuu/mq"
 	"github.com/assimon/luuu/mq/handle"
-	"github.com/assimon/luuu/telegram"
 	"github.com/assimon/luuu/util/http_client"
 	"github.com/assimon/luuu/util/json"
 	"github.com/assimon/luuu/util/log"
@@ -30,7 +28,6 @@ const DebugTrc20Id = "TXLAQ63Xg1NAzckPwKHvzw7CSEmLMEqcdj"
 
 const DebugErc20ApiUrl = "https://api-sepolia.etherscan.io/api"
 const erc20ApiUrl = "https://api.etherscan.io/api"
-const ercApiKey = "4NVAI1835WTFFD2BDI14QZCET2UGX61N8V"
 
 type UsdtTrc20Resp struct {
 	PageSize int    `json:"page_size"`
@@ -185,18 +182,18 @@ func Trc20CallBack(token string, wg *sync.WaitGroup) {
 		orderCallbackQueue, _ := handle.NewOrderCallbackQueue(order)
 		mq.MClient.Enqueue(orderCallbackQueue, asynq.MaxRetry(5))
 		// 发送机器人消息
-// 		msgTpl := `
-// <b>📢📢有新的交易支付成功！</b>
-// <pre>交易号：%s</pre>
-// <pre>订单号：%s</pre>
-// <pre>请求支付金额：%f cny</pre>
-// <pre>实际支付金额：%f usdt</pre>
-// <pre>钱包地址：%s</pre>
-// <pre>订单创建时间：%s</pre>
-// <pre>支付成功时间：%s</pre>
-// `
-// 		msg := fmt.Sprintf(msgTpl, order.TradeId, order.OrderId, order.Amount, order.ActualAmount, order.Token, order.CreatedAt.ToDateTimeString(), carbon.Now().ToDateTimeString())
-// 		telegram.SendToBot(msg)
+		// 		msgTpl := `
+		// <b>📢📢有新的交易支付成功！</b>
+		// <pre>交易号：%s</pre>
+		// <pre>订单号：%s</pre>
+		// <pre>请求支付金额：%f cny</pre>
+		// <pre>实际支付金额：%f usdt</pre>
+		// <pre>钱包地址：%s</pre>
+		// <pre>订单创建时间：%s</pre>
+		// <pre>支付成功时间：%s</pre>
+		// `
+		// 		msg := fmt.Sprintf(msgTpl, order.TradeId, order.OrderId, order.Amount, order.ActualAmount, order.Token, order.CreatedAt.ToDateTimeString(), carbon.Now().ToDateTimeString())
+		// 		telegram.SendToBot(msg)
 	}
 }
 
@@ -228,7 +225,7 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		"page":            "1",
 		"contractaddress": token_id,
 		"address":         token,
-		"apikey":          ercApiKey,
+		"apikey":          config.ApiKey,
 	}).Get(api_url)
 	if err != nil {
 		panic(err)
