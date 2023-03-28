@@ -26,7 +26,7 @@ const DebugUsdtTrc20ApiUri = "https://nileapi.tronscan.org/api/transfer/trc20"
 const trc20Id = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 const DebugTrc20Id = "TXLAQ63Xg1NAzckPwKHvzw7CSEmLMEqcdj"
 
-const DebugErc20ApiUrl = "https://api-goerli.etherscan.io/api"
+const DebugErc20ApiUrl = "https://api-sepolia.etherscan.io/api"
 const erc20ApiUrl = "https://api.etherscan.io/api"
 const ercApiKey = "4NVAI1835WTFFD2BDI14QZCET2UGX61N8V"
 
