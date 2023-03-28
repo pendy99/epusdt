@@ -22,6 +22,7 @@ func (r ListenTrc20Job) Run() {
 		log.Sugar.Error(err)
 		return
 	}
+	log.Sugar.Debug("walletAddress count = %d", len(walletAddress))
 	if len(walletAddress) <= 0 {
 		return
 	}
@@ -29,8 +30,10 @@ func (r ListenTrc20Job) Run() {
 	for _, address := range walletAddress {
 		wg.Add(1)
 		if strings.HasPrefix(address.Token, "0x") {
+			log.Sugar.Debug("check erc20")
 			go service.Erc20CallBack(address.Token, &wg)
 		} else {
+			log.Sugar.Debug("check trc20")
 			go service.Trc20CallBack(address.Token, &wg)
 		}
 	}

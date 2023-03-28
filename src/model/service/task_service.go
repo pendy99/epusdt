@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/assimon/luuu/config"
@@ -76,8 +78,8 @@ type UsdtErc20Resp struct {
 	Result  []Result `json:"result"`
 }
 type Result struct {
-	BlockNumber       int64  `json:"blockNumber"`
-	TimeStamp         int64  `json:"timeStamp"`
+	BlockNumber       string `json:"blockNumber"`
+	TimeStamp         string `json:"timeStamp"`
 	Hash              string `json:"hash"`
 	Nonce             string `json:"nonce"`
 	BlockHash         string `json:"blockHash"`
@@ -87,14 +89,14 @@ type Result struct {
 	Value             string `json:"value"`
 	TokenName         string `json:"tokenName"`
 	TokenSymbol       string `json:"tokenSymbol"`
-	TokenDecimal      int    `json:"tokenDecimal"`
-	TransactionIndex  int    `json:"transactionIndex"`
+	TokenDecimal      string `json:"tokenDecimal"`
+	TransactionIndex  string `json:"transactionIndex"`
 	Gas               string `json:"gas"`
 	GasPrice          string `json:"gasPrice"`
 	GasUsed           string `json:"gasUsed"`
 	CumulativeGasUsed string `json:"cumulativeGasUsed"`
 	Input             string `json:"input"`
-	Confirmations     int64  `json:"confirmations"`
+	Confirmations     string `json:"confirmations"`
 }
 
 // Trc20CallBack trc20回调
@@ -183,18 +185,18 @@ func Trc20CallBack(token string, wg *sync.WaitGroup) {
 		orderCallbackQueue, _ := handle.NewOrderCallbackQueue(order)
 		mq.MClient.Enqueue(orderCallbackQueue, asynq.MaxRetry(5))
 		// 发送机器人消息
-		msgTpl := `
-<b>📢📢有新的交易支付成功！</b>
-<pre>交易号：%s</pre>
-<pre>订单号：%s</pre>
-<pre>请求支付金额：%f cny</pre>
-<pre>实际支付金额：%f usdt</pre>
-<pre>钱包地址：%s</pre>
-<pre>订单创建时间：%s</pre>
-<pre>支付成功时间：%s</pre>
-`
-		msg := fmt.Sprintf(msgTpl, order.TradeId, order.OrderId, order.Amount, order.ActualAmount, order.Token, order.CreatedAt.ToDateTimeString(), carbon.Now().ToDateTimeString())
-		telegram.SendToBot(msg)
+// 		msgTpl := `
+// <b>📢📢有新的交易支付成功！</b>
+// <pre>交易号：%s</pre>
+// <pre>订单号：%s</pre>
+// <pre>请求支付金额：%f cny</pre>
+// <pre>实际支付金额：%f usdt</pre>
+// <pre>钱包地址：%s</pre>
+// <pre>订单创建时间：%s</pre>
+// <pre>支付成功时间：%s</pre>
+// `
+// 		msg := fmt.Sprintf(msgTpl, order.TradeId, order.OrderId, order.Amount, order.ActualAmount, order.Token, order.CreatedAt.ToDateTimeString(), carbon.Now().ToDateTimeString())
+// 		telegram.SendToBot(msg)
 	}
 }
 
@@ -235,7 +237,7 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		panic(err)
 	}
 	var trc20Resp UsdtErc20Resp
-	log.Sugar.Debug("%s", resp.Body())
+	log.Sugar.Debug("%s", string(resp.Body()))
 	err = json.Cjson.Unmarshal(resp.Body(), &trc20Resp)
 	if err != nil {
 		panic(err)
@@ -244,14 +246,16 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		return
 	}
 	for _, transfer := range trc20Resp.Result {
-		if transfer.To != token || transfer.Confirmations < 12 {
+		confirmations, err := strconv.ParseInt(transfer.Confirmations, 10, 64)
+		tokenDecimal, err := strconv.Atoi(transfer.TokenDecimal)
+		if strings.ToLower(transfer.To) != strings.ToLower(token) || confirmations < 12 {
 			continue
 		}
 		decimalQuant, err := decimal.NewFromString(transfer.Value)
 		if err != nil {
 			panic(err)
 		}
-		decimalDivisor := decimal.NewFromFloat(math.Pow10(transfer.TokenDecimal))
+		decimalDivisor := decimal.NewFromFloat(math.Pow10(tokenDecimal))
 		amount := decimalQuant.Div(decimalDivisor).InexactFloat64()
 		tradeId, err := data.GetTradeIdByWalletAddressAndAmount(token, amount)
 		if err != nil {
@@ -265,8 +269,10 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 			panic(err)
 		}
 		// 区块的确认时间必须在订单创建时间之后
+		transferTimestamp, err := strconv.ParseInt(transfer.TimeStamp, 10, 64)
 		createTime := order.CreatedAt.TimestampWithMillisecond()
-		if transfer.TimeStamp < createTime {
+		if transferTimestamp*1000 < createTime {
+			log.Sugar.Debug("transferTimestamp %s createTime %s", transferTimestamp, createTime)
 			panic("Orders cannot actually be matched")
 		}
 		// 到这一步就完全算是支付成功了
@@ -282,19 +288,6 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		}
 		// 回调队列
 		orderCallbackQueue, _ := handle.NewOrderCallbackQueue(order)
-		mq.MClient.Enqueue(orderCallbackQueue, asynq.MaxRetry(15))
-		// 发送机器人消息
-		msgTpl := `
-<b>📢📢有新的交易支付成功！</b>
-<pre>交易号：%s</pre>
-<pre>订单号：%s</pre>
-<pre>请求支付金额：%f cny</pre>
-<pre>实际支付金额：%f usdt</pre>
-<pre>钱包地址：%s</pre>
-<pre>订单创建时间：%s</pre>
-<pre>支付成功时间：%s</pre>
-`
-		msg := fmt.Sprintf(msgTpl, order.TradeId, order.OrderId, order.Amount, order.ActualAmount, order.Token, order.CreatedAt.ToDateTimeString(), carbon.Now().ToDateTimeString())
-		telegram.SendToBot(msg)
+		mq.MClient.Enqueue(orderCallbackQueue, asynq.MaxRetry(5))
 	}
 }
