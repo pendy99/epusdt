@@ -9,6 +9,8 @@ import (
 
 var (
 	AppDebug    bool
+	UseTestNet bool
+	BlockchainType int64
 	MysqlDns    string
 	RuntimePath string
 	LogSavePath string
@@ -32,6 +34,9 @@ func Init() {
 	}
 	AppDebug = viper.GetBool("app_debug")
 	StaticPath = viper.GetString("static_path")
+	UseTestNet = viper.GetBool("use_testnet")
+	BlockchainType = viper.GetInt64("blockchain_type")
+	
 	RuntimePath = fmt.Sprintf(
 		"%s%s",
 		gwd,

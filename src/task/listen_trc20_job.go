@@ -1,10 +1,12 @@
 package task
 
 import (
+	"strings"
+	"sync"
+
 	"github.com/assimon/luuu/model/data"
 	"github.com/assimon/luuu/model/service"
 	"github.com/assimon/luuu/util/log"
-	"sync"
 )
 
 type ListenTrc20Job struct {
@@ -26,7 +28,11 @@ func (r ListenTrc20Job) Run() {
 	var wg sync.WaitGroup
 	for _, address := range walletAddress {
 		wg.Add(1)
-		go service.Trc20CallBack(address.Token, &wg)
+		if strings.HasPrefix(address.Token, "0x") {
+			go service.Erc20CallBack(address.Token, &wg)
+		} else {
+			go service.Trc20CallBack(address.Token, &wg)
+		}
 	}
 	wg.Wait()
 }

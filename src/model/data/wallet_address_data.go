@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/assimon/luuu/config"
 	"github.com/assimon/luuu/model/dao"
 	"github.com/assimon/luuu/model/mdb"
 	"github.com/assimon/luuu/util/constant"
@@ -46,14 +47,14 @@ func DeleteWalletAddressById(id uint64) error {
 // GetAvailableWalletAddress 获得所有可用的钱包地址
 func GetAvailableWalletAddress() ([]mdb.WalletAddress, error) {
 	var WalletAddressList []mdb.WalletAddress
-	err := dao.Mdb.Model(WalletAddressList).Where("status = ?", mdb.TokenStatusEnable).Find(&WalletAddressList).Error
+	err := dao.Mdb.Model(WalletAddressList).Where("status = ? AND token_type = ?", mdb.TokenStatusEnable, config.BlockchainType).Find(&WalletAddressList).Error
 	return WalletAddressList, err
 }
 
 // GetAllWalletAddress 获得所有钱包地址
 func GetAllWalletAddress() ([]mdb.WalletAddress, error) {
 	var WalletAddressList []mdb.WalletAddress
-	err := dao.Mdb.Model(WalletAddressList).Find(&WalletAddressList).Error
+	err := dao.Mdb.Model(WalletAddressList).Where("token_type = ?", config.BlockchainType).Find(&WalletAddressList).Error
 	return WalletAddressList, err
 }
 
