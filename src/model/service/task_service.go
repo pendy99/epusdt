@@ -71,30 +71,30 @@ type Data struct {
 }
 
 type UsdtErc20Resp struct {
-	Status string `json:"status"`
-	Message string `json:"message"`
-	Result []Result `json:"result"`
+	Status  string   `json:"status"`
+	Message string   `json:"message"`
+	Result  []Result `json:"result"`
 }
 type Result struct {
-	BlockNumber int64 `json:"blockNumber"`
-	TimeStamp int64 `json:"timeStamp"`
-	Hash string `json:"hash"`
-	Nonce string `json:"nonce"`
-	BlockHash string `json:"blockHash"`
-	From string `json:"from"`
-	ContractAddress string `json:"contractAddress"`
-	To string `json:"to"`
-	Value string `json:"value"`
-	TokenName string `json:"tokenName"`
-	TokenSymbol string `json:"tokenSymbol"`
-	TokenDecimal int `json:"tokenDecimal"`
-	TransactionIndex int `json:"transactionIndex"`
-	Gas string `json:"gas"`
-	GasPrice string `json:"gasPrice"`
-	GasUsed string `json:"gasUsed"`
+	BlockNumber       int64  `json:"blockNumber"`
+	TimeStamp         int64  `json:"timeStamp"`
+	Hash              string `json:"hash"`
+	Nonce             string `json:"nonce"`
+	BlockHash         string `json:"blockHash"`
+	From              string `json:"from"`
+	ContractAddress   string `json:"contractAddress"`
+	To                string `json:"to"`
+	Value             string `json:"value"`
+	TokenName         string `json:"tokenName"`
+	TokenSymbol       string `json:"tokenSymbol"`
+	TokenDecimal      int    `json:"tokenDecimal"`
+	TransactionIndex  int    `json:"transactionIndex"`
+	Gas               string `json:"gas"`
+	GasPrice          string `json:"gasPrice"`
+	GasUsed           string `json:"gasUsed"`
 	CumulativeGasUsed string `json:"cumulativeGasUsed"`
-	Input string `json:"input"`
-	Confirmations int64 `json:"confirmations"`
+	Input             string `json:"input"`
+	Confirmations     int64  `json:"confirmations"`
 }
 
 // Trc20CallBack trc20回调
@@ -209,7 +209,7 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 	token_id := ""
 	api_url := ""
 	if config.UseTestNet {
-		token_id = "0x326c977e6efc84e512bb9c30f76e30c160ed06fb"
+		token_id = "0x779877A7B0D9E8603169DdbD7836e478b4624789"
 		api_url = DebugErc20ApiUrl
 	} else {
 		token_id = "0xdac17f958d2ee523a2206206994597c13d831ec7"
@@ -235,6 +235,7 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		panic(err)
 	}
 	var trc20Resp UsdtErc20Resp
+	log.Sugar.Debug("%s", resp.Body())
 	err = json.Cjson.Unmarshal(resp.Body(), &trc20Resp)
 	if err != nil {
 		panic(err)
