@@ -281,7 +281,7 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		}
 		// 回调队列
 		orderCallbackQueue, _ := handle.NewOrderCallbackQueue(order)
-		mq.MClient.Enqueue(orderCallbackQueue, asynq.MaxRetry(5))
+		mq.MClient.Enqueue(orderCallbackQueue, asynq.MaxRetry(15))
 		// 发送机器人消息
 		msgTpl := `
 <b>📢📢有新的交易支付成功！</b>
