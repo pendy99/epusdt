@@ -133,6 +133,7 @@ func Trc20CallBack(token string, wg *sync.WaitGroup) {
 	if resp.StatusCode() != http.StatusOK {
 		panic(err)
 	}
+	log.Sugar.Debug("%s", string(resp.Body()))
 	var trc20Resp UsdtTrc20Resp
 	err = json.Cjson.Unmarshal(resp.Body(), &trc20Resp)
 	if err != nil {
@@ -269,7 +270,7 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		transferTimestamp, err := strconv.ParseInt(transfer.TimeStamp, 10, 64)
 		createTime := order.CreatedAt.TimestampWithMillisecond()
 		if transferTimestamp*1000 < createTime {
-			log.Sugar.Debug("transferTimestamp %s createTime %s", transferTimestamp, createTime)
+			// log.Sugar.Debug("transferTimestamp %s createTime %s", transferTimestamp, createTime)
 			panic("Orders cannot actually be matched")
 		}
 		// 到这一步就完全算是支付成功了
