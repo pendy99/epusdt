@@ -166,6 +166,7 @@ func Trc20CallBack(token string, wg *sync.WaitGroup) {
 		// 区块的确认时间必须在订单创建时间之后
 		createTime := order.CreatedAt.TimestampWithMillisecond()
 		if transfer.BlockTimestamp < createTime {
+			log.Sugar.Error("BlockTimestamp %s createTime %s", transfer.BlockTimestamp, createTime)
 			panic("Orders cannot actually be matched")
 		}
 		// 到这一步就完全算是支付成功了
@@ -270,7 +271,7 @@ func Erc20CallBack(token string, wg *sync.WaitGroup) {
 		transferTimestamp, err := strconv.ParseInt(transfer.TimeStamp, 10, 64)
 		createTime := order.CreatedAt.TimestampWithMillisecond()
 		if transferTimestamp*1000 < createTime {
-			// log.Sugar.Debug("transferTimestamp %s createTime %s", transferTimestamp, createTime)
+			 log.Sugar.Error("transferTimestamp %s createTime %s", transferTimestamp, createTime)
 			panic("Orders cannot actually be matched")
 		}
 		// 到这一步就完全算是支付成功了
