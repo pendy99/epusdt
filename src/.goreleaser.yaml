@@ -15,14 +15,7 @@ builds:
     goarch:
       - amd64
 archives:
-  - name_template: >-
-      {{ .ProjectName }}_
-      {{- if eq .Os "Darwin" }}macos_
-      {{- else }}{{- tolower .Os }}_{{end}}
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}
-      {{ if .Arm }}v{{ .Arm }}{{ end }}
+  - name_template: "{{ .ProjectName }}_{{ .Version }}"
     format: tar.gz
     files:
       - .env.example
