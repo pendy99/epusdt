@@ -15,8 +15,7 @@ builds:
     goarch:
       - amd64
 archives:
-    id: epusdt
-    - name_template: >-
+  - name_template: >-
       {{ .ProjectName }}_
       {{- if eq .Os "Darwin" }}macos_
       {{- else }}{{- tolower .Os }}_{{end}}
